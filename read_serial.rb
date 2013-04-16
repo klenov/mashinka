@@ -4,13 +4,11 @@
 #(http://rubygems.org/gems/serialport)
  
 require "serialport"
-
 require 'fcntl'
-
 require 'io/wait'
-
 require 'logger'
-log = Logger.new('read_serial_log.txt')
+
+log = Logger.new('log/read_serial.log')
 # FATAL or ERROR for normal use
 log.level = Logger::DEBUG
 log.info "Programm started."
@@ -32,8 +30,9 @@ port_str = false
 until port_str
   if File.exists?("/dev/ttyUSB#{i}") || i > 10
      port_str = "/dev/ttyUSB#{i}"
-     log.debug  "/dev/ttyUSB#{i} "
+     log.info  "/dev/ttyUSB#{i} "
   end
+  i += 1
 end
 
 #port_str = "/dev/ttyUSB2"
@@ -72,6 +71,16 @@ Thread.new do
         # any byte beetwen 96 ('`') and 128, for instance 'a', 'b', ...
         log.debug "stop_pshyk"
         sp.write('a')
+      elsif s == 'forward'
+        sp.write("\xA3")
+      elsif s == 'backward'
+        sp.write("\xA4")
+      elsif s == 'left'
+        sp.write("\xA1")
+      elsif s == 'right'
+        sp.write("\xA2")
+      elsif s == 'stop'
+        sp.write("\xA5")
       elsif s == "check_connection"
         log.debug "check_connection"
         rndm = Random.new

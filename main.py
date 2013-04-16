@@ -302,7 +302,7 @@ class CamShiftDemo:
                 print("Attempt to check connection...")
                 self.child.sendline('check_connection')
                 # в руби-скрипте генерируем случайное число и посылаем на сериал и ждем ответа
-                # а тут надо возможно очистить стдини ждать ответ и вывести сообщение
+                # а тут надо возможно очистить стдин и ждать ответ и вывести сообщение
                 # хорошо бы в скобках выводить отправленный байт
                 
                 try:
@@ -317,32 +317,21 @@ class CamShiftDemo:
                 
             elif c == ord("b"):
                 backproject_mode = not backproject_mode
+            elif c == ord("w"):   
+                self.child.sendline('forward')
+            elif c == ord("s"):   
+                self.child.sendline('backward')
+            elif c == ord("a"):   
+                self.child.sendline('left')
+            elif c == ord("d"):   
+                self.child.sendline('right')
+            elif c == ord("f"):   
+                self.child.sendline('stop')
 
 if __name__=="__main__":
     demo = CamShiftDemo()
     demo.run()
     
-    # закрить руби-скрипт!!!!!!!!!!
-    # закрить руби-скрипт!!!!!!!!!! сделал    
+    # завершить руби-скрипт!
     cv.DestroyAllWindows()
     
-    
-""" 
- заготовки
- 
- process = subprocess.Popen( "./python_test_subprocess.py" ,stderr=subprocess.STDOUT,stdout=subprocess.PIPE)
- 
- 
- 
- While you could share the serial port using appropriate locking, I wouldn't recommend it. I've written several multi-threaded applications that communicate on the serial port in Python, and in my experience the following approach is better:
-
-Have a single class, in a single thread, manage the actual serial port communication, via a Queue object or two:
-Stuff read from the port is placed into the queue
-Commands to send to the port are placed into the queue and the "Serial thread" sends them
-Have the other threads implement logic by placing things into the queue and taking things out
-Using Queue objects will greatly simplify your code and make it more robust.
-
-This approach opens a lot of possibilities for you in terms of design. You can, for example, register events (callbacks) with the serial thread manager and have it call them (in a synchronized way) when interesting events occur, etc.
- 
- 
-"""
