@@ -67,7 +67,7 @@ def serial_init():
 """
 
 
-class CamShiftDemo:
+class Mashinka:
 
     def __init__(self):
         self.capture = cv.CaptureFromCAM(0)
@@ -76,11 +76,11 @@ class CamShiftDemo:
         cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
         cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_FPS,          60)
 
-        cv.NamedWindow( "CamShiftDemo", 1 )
+        cv.NamedWindow( "Mashinka", 1 )
         cv.NamedWindow( "Histogram", 1 )
         # окно для отображения приблизительного хода рисования
         #cv.NamedWindow( "Painting", 1 )
-        cv.SetMouseCallback( "CamShiftDemo", self.on_mouse)
+        cv.SetMouseCallback( "Mashinka", self.on_mouse)
 
         self.drag_start = None      # Set to (x,y) when mouse starts drag
         self.track_window = None    # Set to rect when the mouse drag finishes
@@ -111,8 +111,11 @@ class CamShiftDemo:
         # размер (в пикселях камеры) точки нарисованной баллончиком
         self.dot_size = 10
 
+        self.throttle = 0
+
         self.last_sended_command = ""
-        
+        self.connection_is_ok = False
+
         # пока  решил сам трафарет использовать как массив незакрашенных пикселей и модифицировать его
         #self.painted = self.stencil
 
@@ -275,12 +278,21 @@ class CamShiftDemo:
             cv.Rectangle(frame, pt1, pt2, 0, cv.CV_FILLED)
             
             font = cv.InitFont(cv.CV_FONT_HERSHEY_PLAIN, 1, 1, 0, 1)
-            cv.PutText(frame, "Testing text rendering!", pt1, font, cv.CV_RGB( 255, 255, 255 ))
+
+            cv.PutText(frame, "Connection:", (20, 460), font, cv.CV_RGB( 255, 255, 255 ))
+            if self.connection_is_ok:            
+              cv.PutText(frame, "OK", (125, 460), font, cv.CV_RGB( 30, 255, 10 ))
+            else:
+              cv.PutText(frame, "?",  (125, 460), font, cv.CV_RGB( 255, 10, 10 ))  
+
+            cv.PutText(frame, "Dot size: " + str(self.dot_size), (155, 460), font, cv.CV_RGB( 255, 255, 255 ))  
+
+            cv.PutText(frame, "Throttle: " + str(self.throttle) + ' %', (295, 460), font, cv.CV_RGB( 255, 255, 255 ))  
 
             if not backproject_mode:
-                cv.ShowImage( "CamShiftDemo", frame )
+                cv.ShowImage( "Mashinka", frame )
             else:
-                cv.ShowImage( "CamShiftDemo", backproject)
+                cv.ShowImage( "Mashinka", backproject)
             # закомментировать для отключения гистограммы
             cv.ShowImage( "Histogram", self.hue_histogram_as_image(hist))
 
@@ -314,6 +326,7 @@ class CamShiftDemo:
                 # почему строка именно такая, а именно откуда берется check_connection я не понял, почему-то функция read возвращает все строки отправленные child
                 if s and s == 'check_connection\r\nconnection_ok\r\n':
                   print('connection is ok');
+                  self.connection_is_ok = true
                 
             elif c == ord("b"):
                 backproject_mode = not backproject_mode
@@ -329,7 +342,7 @@ class CamShiftDemo:
                 self.child.sendline('stop')
 
 if __name__=="__main__":
-    demo = CamShiftDemo()
+    demo = Mashinka()
     demo.run()
     
     # завершить руби-скрипт!
