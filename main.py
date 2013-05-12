@@ -113,6 +113,8 @@ class Mashinka:
 
         self.throttle = 0
 
+        self.led_brightness = 0
+
         self.last_sended_command = ""
         self.connection_is_ok = False
 
@@ -288,6 +290,8 @@ class Mashinka:
             cv.PutText(frame, "Dot size: " + str(self.dot_size), (155, 460), font, cv.CV_RGB( 255, 255, 255 ))  
 
             cv.PutText(frame, "Throttle: " + str(self.throttle) + ' %', (295, 460), font, cv.CV_RGB( 255, 255, 255 ))  
+
+            cv.PutText(frame, "Led: " + str(self.led_brightness) + ' %', (450, 460), font, cv.CV_RGB( 255, 255, 255 ))  
 
             if not backproject_mode:
                 cv.ShowImage( "Mashinka", frame )

@@ -61,11 +61,11 @@ void setup()
   // start serial port
   Serial.begin( c_serial_bps );
   
-  first_servo.attach(first_servo_pin);  // attaches the servo on pin 10 to the servo object 
+  first_servo.attach(first_servo_pin); 
   
   when_release_servo = millis(); // переменная для отключение серво-привода пшикалки
   
-  Serial.print(42);
+  //Serial.print(42);
 }
 
 byte serial_read()
