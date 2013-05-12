@@ -87,7 +87,7 @@ class Mashinka:
         
         # лучше использовать руби-скрипт: там есть тайминг для чтения сериал-порта
         self.child = pexpect.spawn("./read_serial.rb")
-	self.child.sendline('Initial string.')       
+	    self.child.sendline('Initial string.')       
         
         # очистка консоли? это жлобство
 
@@ -330,7 +330,7 @@ class Mashinka:
                 # почему строка именно такая, а именно откуда берется check_connection я не понял, почему-то функция read возвращает все строки отправленные child
                 if s and s == 'check_connection\r\nconnection_ok\r\n':
                   print('connection is ok');
-                  self.connection_is_ok = true
+                  self.connection_is_ok = True
                 
             elif c == ord("b"):
                 backproject_mode = not backproject_mode
