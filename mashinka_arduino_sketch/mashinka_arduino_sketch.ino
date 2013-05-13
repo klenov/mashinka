@@ -80,6 +80,7 @@ const int      sensorIR      =    0;
 // constants for case statement
 const int c_pshyk            = 1;
 const int c_stop_pshyk       = 3;
+const int c_toggle_options      = 4;
 const int c_go               = 5;
 const int c_check_connection = 7;
 // options, 5 bites
@@ -373,7 +374,7 @@ void loop()
     case c_check_connection:
       check_connection( command_argument( incoming_byte ) ); 
       break;
-    case toggle_options:
+    case c_toggle_options:
       toggle_options( c_argument ); 
       break;
     case c_go:
