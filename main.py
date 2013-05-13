@@ -291,14 +291,14 @@ class Mashinka:
 
             cv.PutText(frame, "Dot size: " + str(self.dot_size), (155, 460), font, cv.CV_RGB( 255, 255, 255 ))  
 
-            cv.PutText(frame, "Throttle: " + str(self.throttle) + ' %', (295, 460), font, cv.CV_RGB( 255, 255, 255 ))  
+            cv.PutText(frame, "Throttle: " + str(self.throttle) + ' %', (265, 460), font, cv.CV_RGB( 255, 255, 255 ))  
 
-            cv.PutText(frame, "Led: " + str(self.led_brightness) + ' %', (450, 460), font, cv.CV_RGB( 255, 255, 255 ))  
+            cv.PutText(frame, "Led: " + str(self.led_brightness) + ' %', (420, 460), font, cv.CV_RGB( 255, 255, 255 ))  
 
             if self.p_mode_enabled:
-              cv.PutText(frame, "P-mode: On" , (550, 460), font, cv.CV_RGB( 255, 255, 255 ))
+              cv.PutText(frame, "P-mode: On" , (520, 460), font, cv.CV_RGB( 255, 255, 255 ))
             else:
-              cv.PutText(frame, "P-mode: Off" , (550, 460), font, cv.CV_RGB( 255, 255, 255 ))
+              cv.PutText(frame, "P-mode: Off" , (520, 460), font, cv.CV_RGB( 255, 255, 255 ))
 
             if not backproject_mode:
                 cv.ShowImage( "Mashinka", frame )
@@ -353,6 +353,7 @@ class Mashinka:
                 self.child.sendline('stop')
             elif c == ord("q"):   
                 self.child.sendline('toggle_p_mode')
+                self.p_mode_enabled   = not self.p_mode_enabled
 
     
 

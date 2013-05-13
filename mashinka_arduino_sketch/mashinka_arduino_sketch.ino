@@ -306,7 +306,13 @@ void release_servo_if_needed(boolean anyway) // вместо использов�
 void stop_if_needed(boolean anyway) // вместо использования делея: в этой функции собрать все действия после делей, например отключение пшыкалки
 {
   if( when_stop <= millis() || anyway )
-    { stop(); }
+    { 
+      stop(); 
+
+      if(opt_pshyk_flag){
+        stop_pshyk();
+      }
+    }
 }
 
 void mpu_setup()
@@ -446,11 +452,16 @@ void loop()
      change_direction(state, direction_motor_pins, motors_count); // turn all motors forward/backward
      change_speed(255, speed_motor_pins, motors_count); // provide power to all motors
      weak_motor_compensation();
-     //delay(duration); // лучше бы определить угол
-     when_stop  = millis() + 400;
+     //delay(duration); // лучше бы определить угол     
     
  //    stop();
-     
+     if(opt_pshyk_flag){
+      pshyk(32);
+      when_stop  = millis() + 5000;
+     } else
+     {
+      when_stop  = millis() + 400;
+     }
  }
  
  void turn(int direct, int duration)
@@ -481,11 +492,11 @@ void  toggle_options(byte recieved_number)
 {  
   switch ( recieved_number ) {   
     case opt_pshyk:      
-      if(opt_pshyk){
-        opt_pshyk = false;
+      if(opt_pshyk_flag){
+        opt_pshyk_flag = false;        
       } else
       {
-        opt_pshyk = true;
+        opt_pshyk_flag = true;
       }
 
       break;
