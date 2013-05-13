@@ -71,7 +71,7 @@ void dmpDataReady() {
 
 // int inByte = 0;         // incoming serial byte
 const int c_serial_bps       = 9600;
-const int first_servo_pin    =    3; // first servo pin
+const int first_servo_pin    =    9; // vrode pin 9 ne budet rabotat kak pwm esli podkluchena <Servo.h> 
 const int  servo_neutral_pos =    140; // bylo 50 so starym servo
 const int  servo_armed_pos   =    50; // bylo 180 so starym servo
 
@@ -80,7 +80,28 @@ const int      sensorIR      =    0;
 // constants for case statement
 const int c_pshyk            = 1;
 const int c_stop_pshyk       = 3;
+const int c_go               = 5;
 const int c_check_connection = 7;
+
+///////////// MASHINKA
+const int motors_count = 4;
+
+const int LEFT     = 10;
+const int RIGHT    = 20;
+const int FORWARD  = 30;
+const int BACKWARD = 40;
+const int STOP     = 50;
+
+int speed_motor_pins[]    ={ 3, 5, 6, 11 }; // зеленые провода
+  
+int direction_motor_pins[]={ 2, 4, 7, 8 }; // бело-зеленые провода
+  
+int left_speed_pins[]     ={ 6, 11 }; //
+int right_speed_pins[]    ={ 3, 5}; //
+  
+int right_dir_pins[]     ={ 2, 4 }; //
+int left_dir_pins[]    ={ 7, 8 }; //
+/////////////
 
 
 
@@ -88,8 +109,10 @@ const int c_check_connection = 7;
 Servo first_servo;  // create servo object to control a servo 
 unsigned long when_release_servo;
 unsigned long when_read_mpu;
+unsigned long when_stop; 
 //boolean  send_ir_data  =    true; // !!!
 boolean  send_ir_data  =    false; // !!!
+boolean  use_gyro      =    false; 
 
 
 void setup()
@@ -102,8 +125,16 @@ void setup()
   when_release_servo = millis(); // переменная для отключение серво-привода пшикалки
   
   //Serial.print(42);
+  ///////////// MASHINKA
+  for (int i = 0; i < motors_count; i++) {
+    pinMode(speed_motor_pins[i],  OUTPUT);
+    pinMode(direction_motor_pins[i],OUTPUT);
+     }  
+
   /* gyro */
+  if (use_gyro){
   mpu_setup();
+  }
 }
 
 byte serial_read()
@@ -136,6 +167,27 @@ void stop_pshyk()
  first_servo.write( servo_neutral_pos );
  when_release_servo = millis();
 
+}
+
+void mashinka( byte recieved_number ) 
+{
+  switch ( recieved_number ) {   
+  case FORWARD/10:      
+    go(FORWARD, 3000);
+    break;
+  case BACKWARD/10:
+    go(BACKWARD, 3000);
+    break;
+  case STOP/10:
+    when_stop  = millis();
+    break;
+  case LEFT/10:
+    turn(LEFT, 3000);
+    break;  
+  case RIGHT/10:
+    turn(RIGHT, 3000);
+    break;    
+    }
 }
 
 void check_connection( byte recieved_number ) 
@@ -244,7 +296,12 @@ void release_servo_if_needed(boolean anyway) // вместо использов�
 {
   if( when_release_servo <= millis() || anyway )
   { first_servo.write( servo_neutral_pos ); }
+}
 
+void stop_if_needed(boolean anyway) // вместо использования делея: в этой функции собрать все действия после делей, например отключение пшыкалки
+{
+  if( when_stop <= millis() || anyway )
+    { stop(); }
 }
 
 void mpu_setup()
@@ -293,7 +350,7 @@ void mpu_read()
 
 
 void loop()
-{
+{ 
   //Serial.println("start");
   //Serial.println(millis());
   byte incoming_byte = 0;
@@ -312,13 +369,16 @@ void loop()
     case c_check_connection:
       check_connection( command_argument( incoming_byte ) ); 
       break;
+    case c_go:
+      mashinka( command_argument( incoming_byte ) );  
+      break; 
   }
     
   release_servo_if_needed( false );
-  
+  stop_if_needed( false );
   
   //Serial.println("1");   // send an initial string
-//  delay(40);
+  //  delay(40);
   //delay(220);
   //Serial.println(millis());
   
@@ -327,11 +387,85 @@ void loop()
     serial_send( get_ir_range() );
   }
 
-
-  if ( mpuInterrupt )
+  if ( use_gyro && mpuInterrupt )
   {
     mpu_read();
   }
+}
+
+  ///////////// MASHINKA
+  // думаю эти ф-и должны принимать ссылку на массив, а по умолчанию изменять значения для всех моторов
+  void change_direction(int dir, int direction_pins[], int count)
+  {
+    //  int count = sizeof(direction_pins)/sizeof(int);
+    for (int i = 0; i < count; i++) {
+      digitalWrite(direction_pins[i],dir);
+    }
+  }
+  
+  void stop()
+   {
+     change_speed(0, speed_motor_pins, motors_count);  
+   }
+  
+  void change_speed(int spd, int speed_pins[], int count)
+   {
+   //    int count = sizeof(speed_pins)/sizeof(int);
+    for (int i = 0; i < count; i++) {
+        analogWrite(speed_pins[i], spd);
+      }
+    }
+    
+  void weak_motor_compensation()
+   {
+    // analogWrite(6, 250);
+    // analogWrite(9, 250);
+   }
+   
+  void go(int direct, int duration)
+   {
+     stop();
+     int state;
+   
+     if (direct == FORWARD) {      
+      state = HIGH;
+      }
+     if (direct == BACKWARD) {
+     state = LOW;
+      }
+   
+     change_direction(state, direction_motor_pins, motors_count); // turn all motors forward/backward
+     change_speed(255, speed_motor_pins, motors_count); // provide power to all motors
+     weak_motor_compensation();
+     //delay(duration); // лучше бы определить угол
+     when_stop  = millis() + 400;
+    
+ //    stop();
+     
+ }
+ 
+ void turn(int direct, int duration)
+ {
+     int l_state, r_state;
+     stop();
+     
+     if (direct == RIGHT) {
+       r_state = HIGH;
+       l_state = LOW;
+     }
+     if (direct == LEFT) {
+       r_state = LOW;
+       l_state = HIGH;
+     }
+     
+     change_direction(r_state, right_dir_pins, 2);
+     change_direction(l_state, left_dir_pins, 2);
+     change_speed(250, speed_motor_pins, motors_count);
+     
+     when_stop  = millis() + 400;
+     //weak_motor_compensation();
+     //delay(duration); // лучше бы определить угол
+     //stop();  
 }
 
 /*

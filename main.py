@@ -87,7 +87,7 @@ class Mashinka:
         
         # лучше использовать руби-скрипт: там есть тайминг для чтения сериал-порта
         self.child = pexpect.spawn("./read_serial.rb")
-	    self.child.sendline('Initial string.')       
+        self.child.sendline('Initial string.')       
         
         # очистка консоли? это жлобство
 
