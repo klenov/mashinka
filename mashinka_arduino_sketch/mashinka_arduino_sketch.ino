@@ -360,6 +360,7 @@ void loop()
   //Serial.println(millis());
   byte incoming_byte = 0;
   incoming_byte = serial_read(); 
+  byte c_argument = command_argument( incoming_byte );
   //incoming_byte = B00100011;
   
   // Serial.println(command_number(incoming_byte));
