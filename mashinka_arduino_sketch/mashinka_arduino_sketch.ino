@@ -493,11 +493,7 @@ void  toggle_options(byte recieved_number)
   switch ( recieved_number ) {   
     case opt_pshyk:      
       if(opt_pshyk_flag){
-<<<<<<< HEAD
-        opt_pshyk_flag = false;        
-=======
-        opt_pshyk_flag = false;
->>>>>>> 43f74d59d3f155f66a5f19cd58beee4b49277006
+        opt_pshyk_flag = false;                
       } else
       {
         opt_pshyk_flag = true;
