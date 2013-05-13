@@ -481,11 +481,11 @@ void  toggle_options(byte recieved_number)
 {  
   switch ( recieved_number ) {   
     case opt_pshyk:      
-      if(opt_pshyk){
-        opt_pshyk = false;
+      if(opt_pshyk_flag){
+        opt_pshyk_flag = false;
       } else
       {
-        opt_pshyk = true;
+        opt_pshyk_flag = true;
       }
 
       break;
