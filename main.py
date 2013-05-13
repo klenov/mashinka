@@ -82,7 +82,7 @@ class Mashinka:
         #cv.NamedWindow( "Painting", 1 )
         cv.SetMouseCallback( "Mashinka", self.on_mouse)
 
-        self.drag_start = None      # Set to (x,y) when mouse starts drag
+        self.drag_start   = None    # Set to (x,y) when mouse starts drag
         self.track_window = None    # Set to rect when the mouse drag finishes
         
         # лучше использовать руби-скрипт: там есть тайминг для чтения сериал-порта
@@ -117,6 +117,8 @@ class Mashinka:
 
         self.last_sended_command = ""
         self.connection_is_ok = False
+
+        self.p_mode_enabled   = False        
 
         # пока  решил сам трафарет использовать как массив незакрашенных пикселей и модифицировать его
         #self.painted = self.stencil
@@ -293,6 +295,11 @@ class Mashinka:
 
             cv.PutText(frame, "Led: " + str(self.led_brightness) + ' %', (450, 460), font, cv.CV_RGB( 255, 255, 255 ))  
 
+            if self.p_mode_enabled:
+              cv.PutText(frame, "P-mode: On" , (550, 460), font, cv.CV_RGB( 255, 255, 255 ))
+            else:
+              cv.PutText(frame, "P-mode: Off" , (550, 460), font, cv.CV_RGB( 255, 255, 255 ))
+
             if not backproject_mode:
                 cv.ShowImage( "Mashinka", frame )
             else:
@@ -344,6 +351,10 @@ class Mashinka:
                 self.child.sendline('right')
             elif c == ord("f"):   
                 self.child.sendline('stop')
+            elif c == ord("q"):   
+                self.child.sendline('toggle_p_mode')
+
+    
 
 if __name__=="__main__":
     demo = Mashinka()

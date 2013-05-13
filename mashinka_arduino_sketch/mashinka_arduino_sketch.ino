@@ -82,6 +82,8 @@ const int c_pshyk            = 1;
 const int c_stop_pshyk       = 3;
 const int c_go               = 5;
 const int c_check_connection = 7;
+// options, 5 bites
+const int opt_pshyk  = 1;
 
 ///////////// MASHINKA
 const int motors_count = 4;
@@ -114,6 +116,8 @@ unsigned long when_stop;
 boolean  send_ir_data  =    false; // !!!
 boolean  use_gyro      =    false; 
 
+// options
+boolean opt_pshyk_flag      = false;
 
 void setup()
 {
@@ -369,9 +373,12 @@ void loop()
     case c_check_connection:
       check_connection( command_argument( incoming_byte ) ); 
       break;
+    case toggle_options:
+      toggle_options( c_argument ); 
+      break;
     case c_go:
       mashinka( command_argument( incoming_byte ) );  
-      break; 
+      break;       
   }
     
   release_servo_if_needed( false );
@@ -466,6 +473,21 @@ void loop()
      //weak_motor_compensation();
      //delay(duration); // лучше бы определить угол
      //stop();  
+}
+
+void  toggle_options(byte recieved_number)
+{  
+  switch ( recieved_number ) {   
+    case opt_pshyk:      
+      if(opt_pshyk){
+        opt_pshyk = false;
+      } else
+      {
+        opt_pshyk = true;
+      }
+
+      break;
+  }
 }
 
 /*

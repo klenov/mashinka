@@ -3,7 +3,7 @@
 #using the SerialPort gem
 #(http://rubygems.org/gems/serialport)
  
-require "serialport"
+require 'serialport'
 require 'fcntl'
 require 'io/wait'
 require 'logger'
@@ -11,7 +11,7 @@ require 'logger'
 log = Logger.new('log/read_serial.log')
 # FATAL or ERROR for normal use
 log.level = Logger::DEBUG
-log.info "Programm started."
+log.info 'Programm started.'
 
 pshyk_duration = 200.0 #miliseconds
 PSHYK_BYTE_TO_SEND = ( (pshyk_duration/333).round + 32 ).chr
@@ -81,6 +81,8 @@ Thread.new do
         sp.write("\xA2")
       elsif s == 'stop'
         sp.write("\xA5")
+      elsif s == 'toggle_p_mode'
+        sp.write("\x81")
       elsif s == "check_connection"
         log.debug "check_connection"
         rndm = Random.new
