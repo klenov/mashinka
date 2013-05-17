@@ -72,15 +72,16 @@ void dmpDataReady() {
 // int inByte = 0;         // incoming serial byte
 const int c_serial_bps       = 9600;
 const int first_servo_pin    =    9; // vrode pin 9 ne budet rabotat kak pwm esli podkluchena <Servo.h> 
-const int  servo_neutral_pos =    140; // bylo 50 so starym servo
-const int  servo_armed_pos   =    50; // bylo 180 so starym servo
+const int servo_neutral_pos  =  140; // bylo 50 so starym servo
+const int servo_armed_pos    =   50; // bylo 180 so starym servo
+const int full_speed         =  255;
 
 const int      sensorIR      =    0;
 
 // constants for case statement
 const int c_pshyk            = 1;
 const int c_stop_pshyk       = 3;
-const int c_toggle_options      = 4;
+const int c_toggle_options   = 4;
 const int c_go               = 5;
 const int c_check_connection = 7;
 // options, 5 bites
@@ -103,7 +104,7 @@ int left_speed_pins[]     ={ 6, 11 }; //
 int right_speed_pins[]    ={ 3, 5}; //
   
 int right_dir_pins[]     ={ 2, 4 }; //
-int left_dir_pins[]    ={ 7, 8 }; //
+int left_dir_pins[]      ={ 7, 8 }; //
 /////////////
 
 
@@ -176,21 +177,23 @@ void stop_pshyk()
 
 void mashinka( byte recieved_number ) 
 {
+  int duration;
+
   switch ( recieved_number ) {   
   case FORWARD/10:      
-    go(FORWARD, 3000);
+    go(FORWARD, 400);
     break;
   case BACKWARD/10:
-    go(BACKWARD, 3000);
+    go(BACKWARD, 400);
     break;
   case STOP/10:
     when_stop  = millis();
     break;
   case LEFT/10:
-    turn(LEFT, 3000);
+    turn(LEFT, 100);
     break;  
   case RIGHT/10:
-    turn(RIGHT, 3000);
+    turn(RIGHT, 100);
     break;    
     }
 }
@@ -450,17 +453,17 @@ void loop()
       }
    
      change_direction(state, direction_motor_pins, motors_count); // turn all motors forward/backward
-     change_speed(255, speed_motor_pins, motors_count); // provide power to all motors
+     change_speed(full_speed, speed_motor_pins, motors_count); // provide power to all motors
      weak_motor_compensation();
      //delay(duration); // лучше бы определить угол     
     
  //    stop();
      if(opt_pshyk_flag){
       pshyk(32);
-      when_stop  = millis() + 5000;
+      when_stop  = millis() + duration*10;
      } else
      {
-      when_stop  = millis() + 400;
+      when_stop  = millis() + duration;
      }
  }
  
@@ -480,9 +483,9 @@ void loop()
      
      change_direction(r_state, right_dir_pins, 2);
      change_direction(l_state, left_dir_pins, 2);
-     change_speed(250, speed_motor_pins, motors_count);
+     change_speed(full_speed, speed_motor_pins, motors_count);
      
-     when_stop  = millis() + 400;
+     when_stop  = millis() + duration;
      //weak_motor_compensation();
      //delay(duration); // лучше бы определить угол
      //stop();  
@@ -502,6 +505,14 @@ void  toggle_options(byte recieved_number)
       break;
   }
 }
+
+/*
+void  macros_xyz()
+{  
+  stop();
+
+}
+*/
 
 /*
 
