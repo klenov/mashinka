@@ -105,6 +105,9 @@ int right_speed_pins[]    ={ 3, 5}; //
   
 int right_dir_pins[]     ={ 2, 4 }; //
 int left_dir_pins[]      ={ 7, 8 }; //
+
+float left_motors_speed  = 1;
+float right_motors_speed = 1;
 /////////////
 
 
@@ -453,7 +456,11 @@ void loop()
       }
    
      change_direction(state, direction_motor_pins, motors_count); // turn all motors forward/backward
-     change_speed(full_speed, speed_motor_pins, motors_count); // provide power to all motors
+     //change_speed(full_speed, speed_motor_pins, motors_count); // provide power to all motors
+
+     change_speed((int)(full_speed*left_motors_speed),   left_speed_pins, 2);
+     change_speed((int)(full_speed*right_motors_speed), rigth_speed_pins, 2);
+
      weak_motor_compensation();
      //delay(duration); // лучше бы определить угол     
     
