@@ -83,6 +83,8 @@ Thread.new do
         sp.write("\xA5")
       elsif s == 'toggle_p_mode'
         sp.write("\x81")
+      elsif s == 'led_inc'
+        sp.write("\x82") 
       elsif s == "check_connection"
         log.debug "check_connection"
         rndm = Random.new

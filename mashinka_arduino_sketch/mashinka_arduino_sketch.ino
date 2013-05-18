@@ -85,7 +85,9 @@ const int c_toggle_options   = 4;
 const int c_go               = 5;
 const int c_check_connection = 7;
 // options, 5 bites
-const int opt_pshyk  = 1;
+const int opt_pshyk      = 1;
+const int opt_led_inc    = 2;
+const int opt_led_dec    = 3;
 
 ///////////// MASHINKA
 const int motors_count = 4;
@@ -96,21 +98,19 @@ const int FORWARD  = 30;
 const int BACKWARD = 40;
 const int STOP     = 50;
 
-int speed_motor_pins[]    ={ 3, 5, 6, 11 }; // зеленые провода
+const int speed_motor_pins[]    ={ 3, 5, 6, 11 }; // зеленые провода
   
-int direction_motor_pins[]={ 2, 4, 7, 8 }; // бело-зеленые провода
+const int direction_motor_pins[]={ 2, 4, 7, 8 }; // бело-зеленые провода
   
-int left_speed_pins[]     ={ 6, 11 }; //
-int right_speed_pins[]    ={ 3, 5}; //
+const int left_speed_pins[]     ={ 6, 11 }; //
+const int right_speed_pins[]    ={ 3, 5}; //
   
-int right_dir_pins[]     ={ 2, 4 }; //
-int left_dir_pins[]      ={ 7, 8 }; //
+const int right_dir_pins[]     ={ 2, 4 }; //
+const int left_dir_pins[]      ={ 7, 8 }; //
 
-float left_motors_speed  = 1;
-float right_motors_speed = 1;
+const int led_pin = 10; 
+
 /////////////
-
-
 
 //####### global variables
 Servo first_servo;  // create servo object to control a servo 
@@ -122,7 +122,12 @@ boolean  send_ir_data  =    false; // !!!
 boolean  use_gyro      =    false; 
 
 // options
-boolean opt_pshyk_flag      = false;
+boolean opt_pshyk_flag      = false;  
+
+float left_motors_speed  = 1;
+float right_motors_speed = 1;
+
+byte led_br = 0;
 
 void setup()
 {
@@ -144,6 +149,8 @@ void setup()
   if (use_gyro){
   mpu_setup();
   }
+
+  pinMode(led_pin, OUTPUT); 
 }
 
 byte serial_read()
@@ -509,6 +516,10 @@ void  toggle_options(byte recieved_number)
         opt_pshyk_flag = true;
       }
 
+      break;
+    case opt_led_inc:        
+      led_br += 25;
+      analogWrite(led_pin, led_br);
       break;
   }
 }

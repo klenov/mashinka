@@ -39,38 +39,10 @@ def is_rect_nonzero(r):
     (_,_,w,h) = r
     return (w > 0) and (h > 0)
 
-"""
-# for serial    
-def set_rts(fileobj, on_off):
-    # Get current flags
-    p = struct.pack('I', 0)
-    flags = fcntl.ioctl(fileobj.fileno(), termios.TIOCMGET, p)
-
-    # Convert four byte string to integer
-    flags = struct.unpack('I', flags)[0]
-
-    if on_off:
-        flags |= termios.TIOCM_RTS
-    else:
-        flags &= ~termios.TIOCM_RTS
-
-    # Set new flags
-    p = struct.pack('I', flags)
-    fcntl.ioctl(fileobj.fileno(), termios.TIOCMSET, p)    
-
-def serial_init():
-    device = '/dev/ttyUSB0'
-    print 'Device: %s' % device
-    serial_port = open(device, 'w')
-    set_rts(serial_port, False)
-    return serial_port;
-"""
-
-
 class Mashinka:
 
     def __init__(self):
-        self.capture = cv.CaptureFromCAM(0)
+        self.capture = cv.CaptureFromCAM(1)
         # понадобилось для ps3 eye установить  разрешение видео, иначе 320_240
         cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_WIDTH,  640)
         cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
@@ -157,7 +129,7 @@ class Mashinka:
             xmax = max(x, self.drag_start[0])
             ymax = max(y, self.drag_start[1])
             self.selection = (xmin, ymin, xmax - xmin, ymax - ymin)
-         # обработка нажатий правой кнопки для указания границ (левая верхняя, правая нижняя) прямоугольника для рисования
+         # TODO: обработка нажатий правой кнопки для указания границ (левая верхняя, правая нижняя) прямоугольника для рисования
         if event == cv.CV_EVENT_RBUTTONUP:
 			print('right button ');
 			#self.paint_rectangle_sp = (x,y)
@@ -168,10 +140,7 @@ class Mashinka:
 
     def run(self):
         hist = cv.CreateHist([180], cv.CV_HIST_ARRAY, [(0,180)], 1 )
-        backproject_mode = False
-        
-        #for serial
-        #serial_port = serial_init()
+        backproject_mode = False    
         
         # commands variables
         get_ir_data = 0
@@ -218,17 +187,12 @@ class Mashinka:
                 self.x = int( round(  track_box[0][0] ) )
                 self.y = int( round(  track_box[0][1] ) )
                 
-                l = ""
-                # тут надо добавить try или как-то рещить с таймингом
-                # тут застревает если нет данных с сериала
-                #c = serial_port.read(1)                                
+                l = ""                                               
 
                 if get_ir_data:
                   # читаем не более 1024 байтов только если они уже есть в буфере, если в буфере ничего нет то вызывается ошибка pexpect.TIMEOUT
                   #self.child.read_nonblocking(size = 1024, timeout = 0)
-
-                  # как отправлять данные?
-                  #child.send('a')                                               
+                                                            
                   if c:
 					  l = '; l = ' + str( ord( c ) )
 					  
@@ -239,26 +203,11 @@ class Mashinka:
                 
                 sys.stdout.write(msg); sys.stdout.flush()
                 
-                # рисуем картинку поверх видеокадра
-                #(src1, alpha, src2, beta, gamma, dst)
-                #frame_gs = cv.CloneMatND(frame)
-                
-                #cv.CvtColor(frame, frame_gs, cv.CV_BGR2GRAY)
-                #print frame.nChannels
-                #print frame.depth
-                #print frame.width
-                #print frame.height
-                
-                #print self.stencil.nChannels
-                #print self.stencil.depth
-                
-                #print type(self.stencil)                                
-                
+                # рисуем картинку поверх видеокадра                               
                 frame_2 = cv.CloneImage(frame)
 
-                if cv.Get2D(self.stencil, self.y, self.x)[0] > 0:      
-                  #serial_port.write('$') 
-		  # если не работает пересылка сообщений в руби-скрипт значит в руби-скрипте ошибка, так уже было несколько раз        
+                if cv.Get2D(self.stencil, self.y, self.x)[0] > 0:                        
+		          # если не работает пересылка сообщений в руби-скрипт значит в руби-скрипте ошибка, так уже было несколько раз        
                   self.child.sendline('pshyk')
                   self.last_sended_command = 'pshyk'
                   cv.Circle(self.stencil, (self.x, self.y), self.dot_size, cv.CV_RGB(0,0,0), -1) 
@@ -266,13 +215,11 @@ class Mashinka:
                   # если последняя команда была "pshyk", то посылаем "stop_pshyk"
                   if self.last_sended_command == 'pshyk':
                     self.last_sended_command = 'stop_pshyk'
-                    self.child.sendline('stop_pshyk')
-                 # print 'draw'
+                    self.child.sendline('stop_pshyk')                
                 
                 cv.AddWeighted(frame, 1, self.stencil, 0.2, 0, frame_2)                
                 frame = frame_2
-                
-                #print()
+                                
             # тут можно написать отрисовку интерфейса
             # сначала рисуем прямоугольник, на который будем выводить текст
             # сделать несколько прямоугольников которые могут быть красными и зелеными, типа проверено ли соединение, в каком стостоянии батарея
@@ -313,8 +260,7 @@ class Mashinka:
                 self.child.close()
                 break
             elif c == ord("c") or c == ord("C"):
-		# тут предпологается добавить обработку проверки связи с ардуинкой
-		
+		# тут предпологается добавить обработку проверки связи с ардуинкой		
 		# тут я читаю все что прислал руби скрипт до тех пор пока не произойдет исключение "таймаут", чтобы очистить буфер
 		while True:
                   try:
@@ -353,6 +299,8 @@ class Mashinka:
                 self.child.sendline('stop')
             elif c == ord("q"):   
                 self.child.sendline('toggle_p_mode')
+            elif c == ord("l"):   
+                self.child.sendline('led_inc')
                 self.p_mode_enabled   = not self.p_mode_enabled
 
     
@@ -360,7 +308,6 @@ class Mashinka:
 if __name__=="__main__":
     demo = Mashinka()
     demo.run()
-    
-    # завершить руби-скрипт!
+       
     cv.DestroyAllWindows()
     
