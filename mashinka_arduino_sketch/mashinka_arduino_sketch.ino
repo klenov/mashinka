@@ -6,28 +6,6 @@
 ответ на проверку связи
 вкл-выкл телеметрию
 изменить уроветь яркости якоря
-
-
-еще программа должна передавать расстояние до стены
-и подтверждать выполнение команд
-
-
-ПЛОХО РАБОТАЕТ
-видимо из-за того что постоянно шлет данные о расстоянии теряются отправленные байты?
-
-при увеличении тайминга проблемы не исчезают
-попробовать отключить пересылку ир_данных и слать команды пшикать
-без пересылки данных все ок работает
-
-надо пробовать посылать байты изредко с ардуино
-будет ли в таком случает стабильно работать прием?
-
-может надо все же неким асинхронным методом читать байты и в буфер их записывать
-типа в треде
-
-еще посмотреть частоту аналог_реад, может надо читать не чаще некторого значения 
-
-может реализовать задачу длительности пшика
 */
 
 #include <Servo.h> 
@@ -102,11 +80,11 @@ const int speed_motor_pins[]    ={ 3, 5, 6, 11 }; // зеленые провод
   
 const int direction_motor_pins[]={ 2, 4, 7, 8 }; // бело-зеленые провода
   
-const int left_speed_pins[]     ={ 6, 11 }; //
-const int right_speed_pins[]    ={ 3, 5}; //
+const int left_speed_pins[]     ={ 6, 11 }; 
+const int right_speed_pins[]    ={ 3, 5}; 
   
-const int right_dir_pins[]     ={ 2, 4 }; //
-const int left_dir_pins[]      ={ 7, 8 }; //
+const int right_dir_pins[]     ={ 2, 4 }; 
+const int left_dir_pins[]      ={ 7, 8 }; 
 
 const int led_pin = 10; 
 
@@ -117,7 +95,7 @@ Servo first_servo;  // create servo object to control a servo
 unsigned long when_release_servo;
 unsigned long when_read_mpu;
 unsigned long when_stop; 
-//boolean  send_ir_data  =    true; // !!!
+
 boolean  send_ir_data  =    false; // !!!
 boolean  use_gyro      =    false; 
 
@@ -138,7 +116,6 @@ void setup()
   
   when_release_servo = millis(); // переменная для отключение серво-привода пшикалки
   
-  //Serial.print(42);
   ///////////// MASHINKA
   for (int i = 0; i < motors_count; i++) {
     pinMode(speed_motor_pins[i],  OUTPUT);
@@ -161,7 +138,6 @@ byte serial_read()
      incoming_byte = Serial.read();
 
    // Serial.println( incoming_byte );
-    //delay(700);  
   }
 	
   return incoming_byte;
@@ -211,7 +187,7 @@ void mashinka( byte recieved_number )
 void check_connection( byte recieved_number ) 
 {
   delay(100);
-  serial_send( recieved_number ); // надо вернуть число + 196?
+  serial_send( recieved_number ); // надо вернуть число + 196
   delay(100);
   pshyk(5);
 }
@@ -423,7 +399,7 @@ void loop()
 
   ///////////// MASHINKA
   // думаю эти ф-и должны принимать ссылку на массив, а по умолчанию изменять значения для всех моторов
-  void change_direction(int dir, int direction_pins[], int count)
+  void change_direction(int dir, const int direction_pins[], int count)
   {
     //  int count = sizeof(direction_pins)/sizeof(int);
     for (int i = 0; i < count; i++) {
@@ -436,7 +412,7 @@ void loop()
      change_speed(0, speed_motor_pins, motors_count);  
    }
   
-  void change_speed(int spd, int speed_pins[], int count)
+  void change_speed(int spd,const int speed_pins[], int count)
    {
    //    int count = sizeof(speed_pins)/sizeof(int);
     for (int i = 0; i < count; i++) {
@@ -466,7 +442,7 @@ void loop()
      //change_speed(full_speed, speed_motor_pins, motors_count); // provide power to all motors
 
      change_speed((int)(full_speed*left_motors_speed),   left_speed_pins, 2);
-     change_speed((int)(full_speed*right_motors_speed), rigth_speed_pins, 2);
+     change_speed((int)(full_speed*right_motors_speed), right_speed_pins, 2);
 
      weak_motor_compensation();
      //delay(duration); // лучше бы определить угол     
@@ -530,35 +506,6 @@ void  macros_xyz()
   stop();
 
 }
-*/
-
-/*
-
- switch (inChar) {   
-    case 'u':
-      // move mouse up
-      Mouse.move(0, -40);
-      break; 
-    case 'd':
-      // move mouse down
-      Mouse.move(0, 40);
-      break;
-    case 'l':
-      // move mouse left
-      Mouse.move(-40, 0);
-      break;
-    case 'r':
-      // move mouse right
-      Mouse.move(40, 0);
-      break;
-    case 'm':
-      // move mouse right
-      Mouse.click(MOUSE_LEFT);
-      break;
-    }
-	
-	
-	
 */
 
 
