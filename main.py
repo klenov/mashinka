@@ -42,7 +42,7 @@ def is_rect_nonzero(r):
 class Mashinka:
 
     def __init__(self):
-        self.capture = cv.CaptureFromCAM(1)
+        self.capture = cv.CaptureFromCAM(0)
         # понадобилось для ps3 eye установить  разрешение видео, иначе 320_240
         cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_WIDTH,  640)
         cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
