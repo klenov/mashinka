@@ -50,8 +50,11 @@ void dmpDataReady() {
 // int inByte = 0;         // incoming serial byte
 const int c_serial_bps       = 9600;
 const int first_servo_pin    =    9; // vrode pin 9 ne budet rabotat kak pwm esli podkluchena <Servo.h> 
-const int servo_neutral_pos  =  140; // bylo 50 so starym servo
-const int servo_armed_pos    =   50; // bylo 180 so starym servo
+const int second_servo_pin    =  10;
+const int first_servo_neutral_pos  =  140; // bylo 50 so starym servo
+const int first_servo_armed_pos    =   50; // bylo 180 so starym servo
+const int second_servo_neutral_pos =  180; 
+const int second_servo_armed_pos   =    0; 
 const int full_speed         =  255;
 
 const int      sensorIR      =    0;
@@ -62,7 +65,7 @@ const int c_stop_pshyk       = 3;
 const int c_toggle_options   = 4;
 const int c_go               = 5;
 const int c_check_connection = 7;
-// options, 5 bites
+// options, 5 bit
 const int opt_pshyk      = 1;
 const int opt_led_inc    = 2;
 const int opt_led_dec    = 3;
@@ -92,6 +95,8 @@ const int led_pin = 10;
 
 //####### global variables
 Servo first_servo;  // create servo object to control a servo 
+Servo second_servo;
+
 unsigned long when_release_servo;
 unsigned long when_read_mpu;
 unsigned long when_stop; 
@@ -101,6 +106,7 @@ boolean  use_gyro      =    false;
 
 // options
 boolean opt_pshyk_flag      = false;  
+boolean opt_use_marker      = false;  
 
 float left_motors_speed  = 1;
 float right_motors_speed = 1;
@@ -112,7 +118,8 @@ void setup()
   // start serial port
   Serial.begin( c_serial_bps );
   
-  first_servo.attach(first_servo_pin); 
+  first_servo.attach(  first_servo_pin  ); 
+  second_servo.attach( second_servo_pin )
   
   when_release_servo = millis(); // переменная для отключение серво-привода пшикалки
   
@@ -147,7 +154,8 @@ void pshyk( int duration ) // duration ot 1 do 32, 1 eq. 333 miliseconds, 32 eq.
 {
   //Serial.println("pshyk"); Serial.println(duration);
  
- first_servo.write( servo_armed_pos );
+ first_servo.write(  first_servo_armed_pos  );
+ second_servo.write( second_servo_armed_pos );
  when_release_servo = millis() + int(duration * 1000/3.0);
 
 }
@@ -156,7 +164,8 @@ void stop_pshyk()
 {
   //Serial.println("stop_pshyk");
  
- first_servo.write( servo_neutral_pos );
+ first_servo.write( first_servo_neutral_pos );
+ second_servo.write( second_servo_neutral_pos );
  when_release_servo = millis();
 
 }
@@ -289,7 +298,7 @@ byte get_ir_range() // get the data from ir range sensor МОЖЕТ ДОБАВИ
 void release_servo_if_needed(boolean anyway) // вместо использования делея: в этой функции собрать все действия после делей, например отключение пшыкалки
 {
   if( when_release_servo <= millis() || anyway )
-  { first_servo.write( servo_neutral_pos ); }
+  { first_servo.write( first_servo_neutral_pos ); }
 }
 
 void stop_if_needed(boolean anyway) // вместо использования делея: в этой функции собрать все действия после делей, например отключение пшыкалки

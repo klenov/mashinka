@@ -262,17 +262,16 @@ class Mashinka:
             elif c == ord("c") or c == ord("C"):
 		# тут предпологается добавить обработку проверки связи с ардуинкой		
 		# тут я читаю все что прислал руби скрипт до тех пор пока не произойдет исключение "таймаут", чтобы очистить буфер
-		while True:
-                  try:
-                    self.child.read_nonblocking(size = 1024, timeout = 0)
-                  except (pexpect.TIMEOUT, pexpect.EOF):
-                    break
+	      while True:
+                try:
+                  self.child.read_nonblocking(size = 1024, timeout = 0)
+                except (pexpect.TIMEOUT, pexpect.EOF):
+                  break
 		
                 print("Attempt to check connection...")
                 self.child.sendline('check_connection')
                 # в руби-скрипте генерируем случайное число и посылаем на сериал и ждем ответа
-                # а тут надо возможно очистить стдин и ждать ответ и вывести сообщение
-                # хорошо бы в скобках выводить отправленный байт
+                # а тут надо возможно очистить стдин и ждать ответ и вывести сообщение                
                 
                 try:
                   s = self.child.read_nonblocking(size = 1024, timeout = 0) + self.child.read_nonblocking(size = 1024, timeout = 2)
@@ -299,9 +298,10 @@ class Mashinka:
                 self.child.sendline('stop')
             elif c == ord("q"):   
                 self.child.sendline('toggle_p_mode')
+                self.p_mode_enabled   = not self.p_mode_enabled
             elif c == ord("l"):   
                 self.child.sendline('led_inc')
-                self.p_mode_enabled   = not self.p_mode_enabled
+                self.led_brightness += 10                
 
     
 
