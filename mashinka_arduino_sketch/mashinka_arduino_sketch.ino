@@ -101,7 +101,7 @@ unsigned long when_release_servo;
 unsigned long when_read_mpu;
 unsigned long when_stop; 
 
-boolean  send_ir_data  =    false; // !!!
+boolean  send_ir_data  =    false;
 boolean  use_gyro      =    false; 
 
 // options
@@ -121,7 +121,7 @@ void setup()
   first_servo.attach(  first_servo_pin  ); 
   second_servo.attach( second_servo_pin )
   
-  when_release_servo = millis(); // переменная для отключение серво-привода пшикалки
+  when_release_servo = millis(); // переменная для отключения серво-привода пшикалки
   
   ///////////// MASHINKA
   for (int i = 0; i < motors_count; i++) {
@@ -508,13 +508,5 @@ void  toggle_options(byte recieved_number)
       break;
   }
 }
-
-/*
-void  macros_xyz()
-{  
-  stop();
-
-}
-*/
 
 

@@ -6,33 +6,8 @@ import cv2.cv as cv
 # для асинхронной коммуникации с сериал-портом
 import sys, pexpect
 
-#import random # генерация номера для проверки коммуникации
-
-# в питоне нет констант? o_O
-
-# сделать по кнопке увеличение уменьшение размера точки
-# сделать программно или аппаратно кнопку для пшика
-
+# TODO сделать увеличение уменьшение размера точки
 # может надо отслеживать сколько он пшикал в каждом месте?
-
-"""
-# for serial
-import fcntl
-import struct
-import sys
-import termios
-import time
-"""
-
-"""
-At my work I'm communicating with an embedded device via a serial-to-USB cable. It works fine, except for one little detail: when the "Ready To Send" (RTS) pin is high, the device shuts down. This is by design, but annoying nonetheless, since almost all serial communication software sets this pin to high. I've written a little Python program that opens the serial connection, sets the RTS pin to low, and shows all data read from it.
-
-You can read the details after the break.
-
-I've tested my solution on Linux, not sure if it works on other systems, as I'm using rather low-level calls to get the RTS pin low. Please leave a comment when you've tried!
-
-The Python code defines two functions; one to set the RTS pin, and one to copy the data from the serial device to stdout. Here is the full code:
-"""
 
 
 def is_rect_nonzero(r):
@@ -59,26 +34,20 @@ class Mashinka:
         
         # лучше использовать руби-скрипт: там есть тайминг для чтения сериал-порта
         self.child = pexpect.spawn("./read_serial.rb")
-        self.child.sendline('Initial string.')       
-        
-        # очистка консоли? это жлобство
+        self.child.sendline('Initial string.')                   
 
         print( "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nKeys:\n"
             "    ESC - quit the program\n"
             "    b - switch to/from backprojection view\n"
-            "To initialize tracking, drag across the object with the mouse\n\n\n\n\n\n" )
-            
-        # загрузка изображения ("трафарета") для рисования
-        #self.stencil = cv.LoadImageM("images/line.png")   
+            "To initialize tracking, drag across the object with the mouse\n\n\n\n\n\n" )                    
         
         # координаты маркера
         self.x = 0
         self.y = 0
         
         # добавить сообщение что картинка загружена
-        # можно принимать имя картинки как параметр AddWeighted
-        # self.stencil = cv.LoadImageM("images/line.png", cv.CV_LOAD_IMAGE_GRAYSCALE)
-        self.stencil = cv.LoadImage("images/line2.png")
+        # можно принимать имя картинки как параметр        
+        self.stencil = cv.LoadImage("images/black.png")
         
         # размер (в пикселях камеры) точки нарисованной баллончиком
         self.dot_size = 10
@@ -221,8 +190,8 @@ class Mashinka:
                 frame = frame_2
                                 
             # тут можно написать отрисовку интерфейса
-            # сначала рисуем прямоугольник, на который будем выводить текст
-            # сделать несколько прямоугольников которые могут быть красными и зелеными, типа проверено ли соединение, в каком стостоянии батарея
+            # сначала рисуем прямоугольник, на который будет выводиться текст
+            # проверено ли соединение, в каком стостоянии батарея
 
             pt1 =  (0, 440)
             pt2 =  (640, 480)
@@ -260,8 +229,8 @@ class Mashinka:
                 self.child.close()
                 break
             elif c == ord("c") or c == ord("C"):
-		# тут предпологается добавить обработку проверки связи с ардуинкой		
-		# тут я читаю все что прислал руби скрипт до тех пор пока не произойдет исключение "таймаут", чтобы очистить буфер
+		
+		# читаю все что прислал руби скрипт до тех пор пока не произойдет исключение "таймаут", чтобы очистить буфер
 	      while True:
                 try:
                   self.child.read_nonblocking(size = 1024, timeout = 0)

@@ -1,6 +1,4 @@
 #!/usr/bin/ruby
-#simplest ruby program to read from serial,
-#using the SerialPort gem
 #(http://rubygems.org/gems/serialport)
  
 require 'serialport'
@@ -13,18 +11,10 @@ log = Logger.new('log/read_serial.log')
 log.level = Logger::DEBUG
 log.info 'Programm started.'
 
-pshyk_duration = 200.0 #miliseconds
+pshyk_duration = 200.0 # miliseconds
 PSHYK_BYTE_TO_SEND = ( (pshyk_duration/333).round + 32 ).chr
 
-#threads = Array.new
-
-# Set $stdin to be non-blocking
-#$stdin.fcntl(Fcntl::F_SETFL,Fcntl::O_NONBLOCK)  
- 
-#params for serial port
-
-# тут ищем первый тти
-
+# ищем первый тти
 i = 0
 port_str = false
 until port_str
@@ -35,7 +25,6 @@ until port_str
   i += 1
 end
 
-#port_str = "/dev/ttyUSB2"
 baud_rate = 9600
 data_bits = 8
 stop_bits = 1
@@ -49,18 +38,10 @@ sp = SerialPort.new(port_str, baud_rate, data_bits, stop_bits, parity)
 # не ждать , читать только то что доступно
 sp.read_timeout = -1
 
-#sp.write('$')
-
-
-#=begin
 
 Thread.new do
   loop do
 
-   # $stdin.each_line do |line|
-   # log.debug "do something with this line: #{line}"
-   # end
-#=begin
     s = gets.chomp
     log.debug s + '(recived from parent)'
 
@@ -107,7 +88,6 @@ Thread.new do
           end 
         end
       end
- #=end
 
   end
 end
@@ -115,8 +95,6 @@ end
 
 loop do
   sleep 1
-#s = gets.chomp
-#log.debug s
 end
  
 sp.close 
