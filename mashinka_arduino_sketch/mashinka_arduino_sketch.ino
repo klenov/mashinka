@@ -53,7 +53,7 @@ const int first_servo_pin    =    9; // vrode pin 9 ne budet rabotat kak pwm esl
 const int second_servo_pin    =  10;
 const int first_servo_neutral_pos  =  140; // bylo 50 so starym servo
 const int first_servo_armed_pos    =   50; // bylo 180 so starym servo
-const int second_servo_neutral_pos =  180; 
+const int second_servo_neutral_pos =  130; 
 const int second_servo_armed_pos   =    0; 
 const int full_speed         =  255;
 
@@ -119,7 +119,7 @@ void setup()
   Serial.begin( c_serial_bps );
   
   first_servo.attach(  first_servo_pin  ); 
-  second_servo.attach( second_servo_pin )
+  second_servo.attach( second_servo_pin );
   
   when_release_servo = millis(); // переменная для отключения серво-привода пшикалки
   
@@ -298,7 +298,10 @@ byte get_ir_range() // get the data from ir range sensor МОЖЕТ ДОБАВИ
 void release_servo_if_needed(boolean anyway) // вместо использования делея: в этой функции собрать все действия после делей, например отключение пшыкалки
 {
   if( when_release_servo <= millis() || anyway )
-  { first_servo.write( first_servo_neutral_pos ); }
+  { 
+    first_servo.write( first_servo_neutral_pos );
+    second_servo.write( second_servo_neutral_pos );
+  }
 }
 
 void stop_if_needed(boolean anyway) // вместо использования делея: в этой функции собрать все действия после делей, например отключение пшыкалки
@@ -508,5 +511,3 @@ void  toggle_options(byte recieved_number)
       break;
   }
 }
-
-
